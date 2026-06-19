@@ -41,11 +41,12 @@ HTML = """<!DOCTYPE html>
             <p><span>容器 ID：</span>{{ hostname }}</p>
             <p><span>部署时间：</span>{{ deploy_time }}</p>
             <p><span>环境：</span>{{ environment }}</p>
+            <p><span>学号：</span>2440666136</p>
+            <p><span>姓名：</span>赖杨源</p>
         </div>
     </div>
 </body>
 </html>"""
-
 
 @app.route("/")
 def index():
@@ -58,11 +59,9 @@ def index():
         environment="Production" if app.config.get("ENV") == "production" else "Development",
     )
 
-
 @app.route("/health")
 def health():
     return {"status": "healthy"}, 200
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
