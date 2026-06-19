@@ -2,9 +2,9 @@
 # Simple Web CI/CD — Flask + Docker
 #
 # 流水线:
-#   1. validate → 安装依赖 + 运行测试
-#   2. build    → 构建 Docker 镜像 + 导出 tar
-#   3. deploy   → SCP 传输 tar + docker load + 启动
+#   1. validate -> 安装依赖 + 运行测试
+#   2. build    -> 构建 Docker 镜像 + 导出 tar
+#   3. deploy   -> SCP 传输 tar + docker load + 启动
 #
 # 关键设计: 镜像在 GitHub Actions 端构建，打成 tar 传到 ECS，
 #           彻底绕过 ECS 访问 Docker Hub 的问题！
@@ -40,7 +40,7 @@ jobs:
         run: python -m pytest test_app.py -v
 
   # ============================================
-  # Job 2: 构建 Docker 镜像 → 导出 tar
+  # Job 2: 构建 Docker 镜像 -> 导出 tar
   # ============================================
   build:
     name: "② 构建镜像"
@@ -67,7 +67,7 @@ jobs:
           retention-days: 1
 
   # ============================================
-  # Job 3: 部署到阿里云 ECS
+  # Job 3: 部署到阿里云 ECS（密码方式）
   # ============================================
   deploy:
     name: "③ 部署至 ECS"
@@ -90,7 +90,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
           source: "docker-compose.prod.yml,simple-web.tar.gz"
           target: "/opt/simple-web/"
           strip_components: 0
@@ -100,7 +100,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
             cd /opt/simple-web
