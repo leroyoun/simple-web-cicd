@@ -67,7 +67,7 @@ jobs:
           retention-days: 1
 
   # ============================================
-  # Job 3: 部署到阿里云 ECS（密码方式）
+  # Job 3: 部署到阿里云 ECS（SSH 密钥方式）
   # ============================================
   deploy:
     name: "③ 部署至 ECS"
@@ -90,9 +90,9 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.prod.yml,simple-web.tar.gz"
-          target: "/opt/simple-web/"
+          target: "/home/${{ secrets.SSH_USERNAME }}/simple-web/"
           strip_components: 0
 
       - name: 加载镜像并启动服务
@@ -100,38 +100,38 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            cd /opt/simple-web
+            cd ~/simple-web
 
             echo "=== [1/5] 加载 Docker 镜像 ==="
             gunzip -f simple-web.tar.gz
-            docker load -i simple-web.tar
+            sudo docker load -i simple-web.tar
             rm -f simple-web.tar
 
-            echo "=== [2/5] 复制 compose 文件 ==="
-            cp docker-compose.prod.yml docker-compose.yml
+            echo "=== [2/5] 更新 compose 文件 ==="
+            cp docker-compose.prod.yml docker-compose.prod.yml.bak || true
 
             echo "=== [3/5] 停止旧容器 ==="
-            docker compose down --remove-orphans || true
+            sudo docker compose -f docker-compose.prod.yml down --remove-orphans || true
 
             echo "=== [4/5] 启动新容器 ==="
-            docker compose up -d
+            sudo docker compose -f docker-compose.prod.yml up -d
 
             echo "=== [5/5] 健康检查 ==="
-            sleep 3
+            sleep 5
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80 || echo "000")
             if [ "$HTTP_CODE" = "200" ]; then
               echo "✅ 部署成功！HTTP: $HTTP_CODE"
             else
               echo "⚠️  返回 $HTTP_CODE，查看日志："
-              docker compose logs --tail=20
+              sudo docker compose -f docker-compose.prod.yml logs --tail=20
             fi
 
             echo ""
             echo "=== 运行状态 ==="
-            docker compose ps
+            sudo docker compose -f docker-compose.prod.yml ps
 
   # ============================================
   # Job 4: 通知
