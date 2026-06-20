@@ -1,5 +1,5 @@
 """
-极简 Flask Web 应用 �?CI/CD 实验演示
+Simple Flask Web App - CI/CD Demo
 """
 from flask import Flask, render_template_string
 
@@ -10,7 +10,7 @@ HTML = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CI/CD 实验 �?Flask App</title>
+    <title>CI/CD Demo - Flask App</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -34,15 +34,15 @@ HTML = """<!DOCTYPE html>
 </head>
 <body>
     <div class="card">
-        <h1>🚀 CI/CD 部署成功�?/h1>
+        <h1>CI/CD Auto Deploy Success</h1>
         <p class="version">Flask App v2.0 | Python {{ python_version }}</p>
-        <div class="status">�?服务运行正常</div>
+        <div class="status">Server Running</div>
         <div class="info">
-            <p><span>容器 ID�?/span>{{ hostname }}</p>
-            <p><span>部署时间�?/span>{{ deploy_time }}</p>
-            <p><span>环境�?/span>{{ environment }}</p>
-            <p><span>学号�?/span>2440666136</p>
-            <p><span>姓名�?/span>赖杨�?/p>
+            <p><span>Host ID:</span>{{ hostname }}</p>
+            <p><span>Deploy Time:</span>{{ deploy_time }}</p>
+            <p><span>Environment:</span>{{ environment }}</p>
+            <p><span>Student ID:</span>2440666136</p>
+            <p><span>Name:</span>Lai Yangyuan</p>
         </div>
     </div>
 </body>
